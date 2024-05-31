@@ -20,7 +20,7 @@ sig Scheduler {
   waiting: set Process
 }
 
-fact {
+fact chainRule{
   // Only one process can be running at a time
   one s: Scheduler | one s.running
   // A process can only be in one state at a time
@@ -43,11 +43,11 @@ pred init[s: Scheduler] {
 
 pred readyToRunning[s, s": Scheduler] {
   // Transition: move a process from READY to RUNNING or change the running process state
-  let selectedProcess = PO/first |
+  let selectedProcess = s.ready |
     s".running = selectedProcess and
-    s".ready = s.ready - selectedProcess and
+    s".ready = s.ready.nextProcess - selectedProcess and
     s".waiting = s.waiting and 
-    selectedProcess.state = RUNNING
+    s".running.state = RUNNING
 }
 
 pred runningToReady[s, s": Scheduler] {
