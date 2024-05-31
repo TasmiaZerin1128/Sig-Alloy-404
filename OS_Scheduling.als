@@ -43,43 +43,59 @@ pred init[s: Scheduler] {
 
 pred readyToRunning[s, s": Scheduler] {
   // Transition: move a process from READY to RUNNING or change the running process state
-  let selectedProcess = s.ready |
-    s".running = selectedProcess and
-    s".ready = s.ready.nextProcess - selectedProcess and
-    s".waiting = s.waiting and 
-    s".running.state = RUNNING
+  let selectedProcess = s.ready {
+ 	 one selectedProcess
+ 
+	 s".running = selectedProcess
+    	 s".ready = s.ready.nextProcess - selectedProcess
+	 s".waiting = s.waiting 
+	 s".running.state = RUNNING
+  }
+
 }
 
 pred runningToReady[s, s": Scheduler] {
-   let runningProcess = s.running |
-	s".running = none and
-	s".ready = s.ready + runningProcess and
-	s".waiting = s.waiting and
+   let runningProcess = s.running {
+	one runningProcess
+
+	s".running = none 
+	s".ready = s.ready + runningProcess 
+	s".waiting = s.waiting 
 	runningProcess.state = READY
+   }
 }
 
 pred readyToWaiting[s,s": Scheduler] {
-   let readyProcess = s.ready |
-	s".ready = s.ready.nextProcess - readyProcess and
-	s".running = s.running and 
-	s".waiting = s.waiting + readyProcess and
+   let readyProcess = s.ready {
+	one readyProcess
+
+	s".ready = s.ready.nextProcess - readyProcess
+	s".running = s.running 
+	s".waiting = s.waiting + readyProcess
 	readyProcess.state = WAITING
+   }
 }
 
 pred waitingToReady[s,s":Scheduler] {
-   let waitingProcess = s.waiting |
-	s".ready = s.ready + waitingProcess and
-	s".waiting = s.waiting.nextProcess - waitingProcess and 
-	s".running = s.running and
+   let waitingProcess = s.waiting {
+	one waitingProcess
+
+	s".ready = s.ready + waitingProcess
+	s".waiting = s.waiting.nextProcess - waitingProcess 
+	s".running = s.running
 	waitingProcess.state = READY
+   }
 }
 
 pred runningToWaiting[s,s":Scheduler] {
-   let runningProcess = s.running |
+   let runningProcess = s.running {
+	one runningProcess
+
 	s".ready = s.ready and
 	s".waiting = s.waiting + runningProcess and
 	s".running = none and 
 	runningProcess.state = WAITING
+   }
 }
 
 fact {
